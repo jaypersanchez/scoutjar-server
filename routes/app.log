@@ -23,3 +23,8 @@
 {"count":40,"filters":{"filter_location":null,"max_salary":null,"min_salary":0,"required_skill":null},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T07:34:16.695Z"}
 {"count":40,"filters":{"filter_location":null,"max_salary":null,"min_salary":0,"required_skill":null},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T07:43:09.776Z"}
 {"count":40,"filters":{"filter_location":null,"max_salary":null,"min_salary":0,"required_skill":null},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T07:43:39.232Z"}
+{"count":40,"filters":{"filter_location":null,"max_salary":null,"min_salary":0,"required_skill":null},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T20:15:46.161Z"}
+{"count":0,"filters":{"filter_location":"New York","max_salary":80000,"min_salary":50000,"required_skill":"Javascript"},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T20:26:20.986Z"}
+{"count":2,"filters":{"filter_location":"New York","max_salary":100000,"min_salary":50000,"required_skill":"JavaScript"},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T20:27:18.942Z"}
+{"count":0,"filters":{"filter_location":"New York","max_salary":80000,"min_salary":50000,"required_skill":"Javascript"},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T20:27:44.171Z"}
+{"count":0,"filters":{"filter_location":"New York","max_salary":80000,"min_salary":50000,"required_skill":"Javascript"},"level":"info","message":"Talent profiles retrieved successfully","timestamp":"2025-03-04T20:30:30.046Z"}

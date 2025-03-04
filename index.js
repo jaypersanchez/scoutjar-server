@@ -24,9 +24,11 @@ app.get('/dbtest', async (req, res) => {
 
 // Import the talent profiles router
 const talentProfilesRouter = require('./routes/talentProfiles');
-
 // Mount the router at the /talent-profiles endpoint
 app.use('/talent-profiles', talentProfilesRouter);
+
+const jobsRouter = require('./routes/jobs');
+app.use('/jobs', jobsRouter);
 
 // Basic route
 app.get('/', (req, res) => {
