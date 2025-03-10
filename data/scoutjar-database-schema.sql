@@ -103,3 +103,9 @@ CREATE TABLE search_filters (
     user_id INT REFERENCES user_profiles(user_id) ON DELETE CASCADE,
     filters JSONB  -- Stores criteria like location, salary, work mode, industry, etc.
 );
+
+CREATE TABLE skills (
+    skill_id SERIAL PRIMARY KEY,
+    skill_name VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL
+);
