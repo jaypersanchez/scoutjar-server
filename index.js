@@ -34,6 +34,14 @@ app.use('/jobs', jobsRouter);
 const jobApplicantsRouter = require('./routes/jobApplicants');
 app.use('/job-applicants', jobApplicantsRouter);
 
+const searchJobsRouter = require('./routes/searchJobs');
+app.use('/search-jobs', searchJobsRouter);
+
+// in your index.js or server.js
+const userProfilesRouter = require('./routes/userProfiles');
+app.use('/user_profiles', userProfilesRouter);
+
+
 // Basic route
 app.get('/', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');

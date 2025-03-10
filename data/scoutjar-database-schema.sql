@@ -7,11 +7,9 @@ CREATE TABLE user_profiles (
     full_name VARCHAR(255),
     profile_picture TEXT,  -- URL to profile picture
     social_profile_url TEXT,  -- URL to LinkedIn/X/Instagram profile
-    user_type VARCHAR(50) CHECK (user_type IN ('talent', 'talent_recruiter')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_type VARCHAR(50) CHECK (user_t-- Talent Profile (Job Seekers)
 );
 
--- Talent Profile (Job Seekers)
 CREATE TABLE talent_profiles (
     talent_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES user_profiles(user_id) ON DELETE CASCADE,
@@ -34,7 +32,11 @@ CREATE TABLE talent_recruiters (
     company_website TEXT,
     industry VARCHAR(100),
     company_logo TEXT
+);ype IN ('talent', 'talent_recruiter')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
 
 -- Jobs Table
 CREATE TABLE jobs (
