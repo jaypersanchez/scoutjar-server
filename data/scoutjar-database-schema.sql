@@ -7,7 +7,7 @@ CREATE TABLE user_profiles (
     full_name VARCHAR(255),
     profile_picture TEXT,  -- URL to profile picture
     social_profile_url TEXT,  -- URL to LinkedIn/X/Instagram profile
-    user_type VARCHAR(50) CHECK (user_t-- Talent Profile (Job Seekers)
+    user_type VARCHAR(50) CHECK (user_type IN ('Talent', 'Scout'))
 );
 
 CREATE TABLE talent_profiles (
