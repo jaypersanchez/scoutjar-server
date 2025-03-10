@@ -32,9 +32,9 @@ CREATE TABLE talent_recruiters (
     company_website TEXT,
     industry VARCHAR(100),
     company_logo TEXT
-);ype IN ('talent', 'talent_recruiter')),
+)type IN ('talent', 'talent_recruiter')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
 
 
 
@@ -69,6 +69,14 @@ CREATE TABLE shortlisted_candidates (
     talent_id INT REFERENCES talent_profiles(talent_id) ON DELETE CASCADE,
     job_id INT REFERENCES jobs(job_id) ON DELETE CASCADE,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE locations (
+    location_id SERIAL PRIMARY KEY,
+    city VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    region VARCHAR(100) NULL,  -- State/Province (for Canada & US)
+    country_code VARCHAR(3) NOT NULL  -- Standard ISO Alpha-3 codes (e.g., USA, CAN, FRA)
 );
 
 -- Notifications Table (for Job Alerts & Application Updates)
