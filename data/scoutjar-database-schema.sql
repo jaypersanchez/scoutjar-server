@@ -13,6 +13,7 @@ CREATE TABLE user_profiles (
 CREATE TABLE talent_profiles (
     talent_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES user_profiles(user_id) ON DELETE CASCADE,
+    requires_two_weeks_notice BOOLEAN,
     resume TEXT,
     bio TEXT,
     skills TEXT[],
@@ -21,8 +22,12 @@ CREATE TABLE talent_profiles (
     work_preferences JSONB,  -- Remote, Hybrid, Onsite preferences
     desired_salary NUMERIC(10,2),
     location TEXT,
-    job_alerts_enabled BOOLEAN DEFAULT TRUE
+    job_alerts_enabled BOOLEAN DEFAULT TRUE,
+    available_from DATE,
+    time_availability JSONB,
+    availability VARCHAR(50)
 );
+
 
 -- Talent Recruiter Profile
 CREATE TABLE talent_recruiters (
