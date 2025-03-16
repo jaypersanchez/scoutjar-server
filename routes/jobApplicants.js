@@ -2,6 +2,26 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+// POST endpoint to apply for a job
+router.post('/apply', async (req, res) => {
+  const { talent_id, job_id } = req.body;
+
+  // Validate required parameters
+  if (!talent_id || !job_id) {
+    return res.status(400).json({ error: 'talent_id and job_id are required.' });
+  }
+
+  try {
+    // Call the PostgreSQL function apply_for_job using a SQL query.
+    // This assumes that the function has been created in your database.
+    await pool.query('SELECT apply_for_job($1, $2)', [talent_id, job_id]);
+    
+    res.status(200).json({ message: 'Application submitted successfully.' });
+  } catch (error) {
+    console.error('Error applying for job:', error);
+    res.status(500).json({ error: error.message });
+  }
+}); 
 // POST /job-applicants endpoint to get job applicants
 router.post('/', async (req, res) => {
   try {

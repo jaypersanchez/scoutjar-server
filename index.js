@@ -41,6 +41,12 @@ app.use('/search-jobs', searchJobsRouter);
 const userProfilesRouter = require('./routes/userProfiles');
 app.use('/user_profiles', userProfilesRouter);
 
+const locationsRouter = require('./routes/locations');
+app.use('/locations', locationsRouter);
+
+// Other existing requires and middleware
+const recruiterApplicationsRouter = require('./routes/recruiterApplications');
+app.use('/recruiter-applications', recruiterApplicationsRouter);
 
 // Basic route
 app.get('/', (req, res) => {
