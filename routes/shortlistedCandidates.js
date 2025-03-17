@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// GET endpoint to fetch shortlisted candidates grouped by job_id for a specific recruiter
+// POST endpoint to fetch shortlisted candidates grouped by job_id for a specific recruiter
 router.post('/grouped', async (req, res) => {
   const { recruiter_id } = req.body;
 
@@ -12,19 +12,23 @@ router.post('/grouped', async (req, res) => {
 
   try {
     const query = `
-      SELECT job_id,
+      SELECT sc.job_id,
              json_agg(
                json_build_object(
-                 'shortlist_id', shortlist_id,
-                 'recruiter_id', recruiter_id,
-                 'talent_id', talent_id,
-                 'added_at', added_at
+                 'shortlist_id', sc.shortlist_id,
+                 'recruiter_id', sc.recruiter_id,
+                 'talent_id', sc.talent_id,
+                 'added_at', sc.added_at,
+                 'email', up.email,
+                 'full_name', up.full_name
                )
              ) AS candidates
-      FROM shortlisted_candidates
-      WHERE recruiter_id = $1
-      GROUP BY job_id
-      ORDER BY job_id;
+      FROM shortlisted_candidates sc
+      JOIN talent_profiles tp ON sc.talent_id = tp.talent_id
+      JOIN user_profiles up ON tp.user_id = up.user_id
+      WHERE sc.recruiter_id = $1
+      GROUP BY sc.job_id
+      ORDER BY sc.job_id;
     `;
     const values = [recruiter_id];
     const result = await pool.query(query, values);
@@ -34,6 +38,7 @@ router.post('/grouped', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // POST endpoint to add a shortlisted candidate
 router.post('/add', async (req, res) => {
