@@ -54,6 +54,10 @@ app.use('/job-titles', jobTitlesRouter);
 const shortlistedCandidatesRouter = require('./routes/shortlistedCandidates');
 app.use('/shortlisted-candidates', shortlistedCandidatesRouter);
 
+const messagesRouter = require('./routes/messages');
+app.use('/messages', messagesRouter);
+
+
 // Basic route
 app.get('/', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');
