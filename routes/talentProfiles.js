@@ -7,13 +7,11 @@ router.post('/', async (req, res) => {
   const { 
     min_salary = 0, 
     max_salary = null, 
-    filter_location = null, 
     required_skill = null,
     job_title = null,
-    preferred_work_mode = null,
-    job_description = null,
-    match_percentage = 0
+    job_description = null
   } = req.body;
+  
 
   console.log("🔹 Received API Request with Parameters:", req.body);
 
@@ -23,24 +21,18 @@ router.post('/', async (req, res) => {
       SELECT * FROM get_filtered_talent_profiles(
         p_min_salary := $1,
         p_max_salary := $2,
-        p_filter_location := $3,
-        p_required_skill := $4,
-        p_job_title := $5,
-        p_preferred_work_mode := $6,
-        p_job_description := $7,
-        p_match_percentage := $8
+        p_required_skill := $3,
+        p_job_title := $4,
+        p_job_description := $5
       );
     `;
     
     const queryParams = [
       min_salary,
       max_salary,
-      filter_location,
       required_skill,
       job_title,
-      preferred_work_mode,
-      job_description,
-      match_percentage
+      job_description
     ];
 
     console.log("🔹 Executing Query:", queryText);
