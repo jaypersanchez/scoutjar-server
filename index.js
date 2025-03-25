@@ -57,6 +57,8 @@ app.use('/shortlisted-candidates', shortlistedCandidatesRouter);
 const messagesRouter = require('./routes/messages');
 app.use('/messages', messagesRouter);
 
+const talentProfilesMatchRouter = require('./routes/talentProfilesMatch');
+app.use('/talent-profiles', talentProfilesMatchRouter);
 
 // Basic route
 app.get('/', (req, res) => {
