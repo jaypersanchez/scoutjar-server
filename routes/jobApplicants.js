@@ -2,6 +2,27 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+
+// GET /job-applicants/count/:recruiter_id
+router.get('/count/:recruiter_id', async (req, res) => {
+  const { recruiter_id } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT job_id, COUNT(*) AS applicant_count
+      FROM job_applications
+      WHERE recruiter_id = $1
+      GROUP BY job_id
+    `, [recruiter_id]);
+
+    res.json(result.rows); // [{ job_id: 1, applicant_count: 5 }, ...]
+  } catch (err) {
+    console.error("Error fetching applicant counts:", err);
+    res.status(500).json({ error: "Failed to fetch applicant counts" });
+  }
+});
+
+
 // POST endpoint to apply for a job
 router.post('/apply', async (req, res) => {
   const { talent_id, job_id } = req.body;
