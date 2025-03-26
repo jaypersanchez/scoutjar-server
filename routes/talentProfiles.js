@@ -2,6 +2,92 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
 
+// Fetch company info by recruiter ID
+router.get('/by-recruiter/:recruiter_id', async (req, res) => {
+  const { recruiter_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT company_name, company_website
+      FROM talent_recruiters
+      WHERE recruiter_id = $1
+      `,
+      [recruiter_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Recruiter profile not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching recruiter profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Update company name and website using recruiter ID
+router.post('/update', async (req, res) => {
+  const { recruiter_id, company, website } = req.body;
+
+  if (!recruiter_id) {
+    return res.status(400).json({ error: "Missing recruiter_id" });
+  }
+
+  try {
+    const updateResult = await pool.query(
+      `
+      UPDATE talent_recruiters
+      SET company_name = $1, company_website = $2
+      WHERE recruiter_id = $3
+      RETURNING company_name, company_website;
+      `,
+      [company, website, recruiter_id]
+    );
+
+    res.json(updateResult.rows[0]);
+  } catch (err) {
+    console.error("Error updating recruiter profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+// Update company name and website
+router.post('/update', async (req, res) => {
+  const { email, company, website } = req.body;
+
+  try {
+    const userResult = await pool.query(
+      'SELECT user_id FROM user_profiles WHERE email = $1',
+      [email]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user_id = userResult.rows[0].user_id;
+
+    const updateResult = await pool.query(
+      `
+      UPDATE talent_recruiters
+      SET company_name = $1, company_website = $2
+      WHERE user_id = $3
+      RETURNING company_name, company_website;
+      `,
+      [company, website, user_id]
+    );
+
+    res.json(updateResult.rows[0]);
+  } catch (err) {
+    console.error("Error updating recruiter profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 router.get('/:talent_id', async (req, res) => {
   const { talent_id } = req.params;
 
