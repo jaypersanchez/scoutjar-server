@@ -2,6 +2,31 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
 
+router.get('/:talent_id', async (req, res) => {
+  const { talent_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT tp.*, up.email, up.full_name, up.profile_picture
+      FROM talent_profiles tp
+      JOIN user_profiles up ON tp.user_id = up.user_id
+      WHERE tp.talent_id = $1
+      `,
+      [talent_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Talent not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching talent profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.post('/', async (req, res) => {
   // Extract all parameters from the request body, applying defaults as needed.
   const { 
