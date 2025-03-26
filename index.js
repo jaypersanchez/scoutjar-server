@@ -60,6 +60,9 @@ app.use('/messages', messagesRouter);
 const talentProfilesMatchRouter = require('./routes/talentProfilesMatch');
 app.use('/talent-profiles', talentProfilesMatchRouter);
 
+const loginRouter = require('./routes/login');
+app.use('/login', loginRouter);
+
 // Basic route
 app.get('/', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');
