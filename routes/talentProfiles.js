@@ -55,7 +55,7 @@ router.post('/update', async (req, res) => {
 
 
 // Update company name and website
-router.post('/update', async (req, res) => {
+/*router.post('/update', async (req, res) => {
   const { email, company, website } = req.body;
 
   try {
@@ -85,7 +85,7 @@ router.post('/update', async (req, res) => {
     console.error("Error updating recruiter profile:", err);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+});*/
 
 
 router.get('/:talent_id', async (req, res) => {
