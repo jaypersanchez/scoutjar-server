@@ -2,6 +2,29 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // Import database connection
 
+// Combine all locations as "City, Country"
+router.get('/all', async (req, res) => {
+    try {
+      const result = await pool.query(`
+        SELECT DISTINCT country, region, city
+        FROM locations
+        ORDER BY country ASC, region ASC, city ASC
+      `);
+  
+      const locations = result.rows.map(row => ({
+        label: `${row.city}, ${row.region}, ${row.country}`,
+        value: `${row.city}, ${row.region}, ${row.country}`,
+      }));
+  
+      res.json(locations);
+    } catch (err) {
+      console.error("Error fetching full location list:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
+
+  
 // Get unique countries in alphabetical order
 router.get('/countries', async (req, res) => {
     try {
