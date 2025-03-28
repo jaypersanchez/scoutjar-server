@@ -47,6 +47,21 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Simple GET route for dropdowns like job matching UI
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT job_id, job_title 
+      FROM public.jobs 
+      ORDER BY date_posted DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching jobs for dropdown:", err);
+    res.status(500).json({ error: "Failed to fetch jobs list" });
+  }
+});
+
 // New endpoint to fetch jobs using the get_jobs Postgres function.
 // Accepts an optional recruiter_id in the request body.
 router.post('/get', async (req, res) => {

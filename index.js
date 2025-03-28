@@ -41,6 +41,27 @@ app.use('/search-jobs', searchJobsRouter);
 const userProfilesRouter = require('./routes/userProfiles');
 app.use('/user_profiles', userProfilesRouter);
 
+const locationsRouter = require('./routes/locations');
+app.use('/locations', locationsRouter);
+
+// Other existing requires and middleware
+const recruiterApplicationsRouter = require('./routes/recruiterApplications');
+app.use('/recruiter-applications', recruiterApplicationsRouter);
+
+const jobTitlesRouter = require('./routes/jobTitles');
+app.use('/job-titles', jobTitlesRouter);
+
+const shortlistedCandidatesRouter = require('./routes/shortlistedCandidates');
+app.use('/shortlisted-candidates', shortlistedCandidatesRouter);
+
+const messagesRouter = require('./routes/messages');
+app.use('/messages', messagesRouter);
+
+const talentProfilesMatchRouter = require('./routes/talentProfilesMatch');
+app.use('/talent-profiles', talentProfilesMatchRouter);
+
+const loginRouter = require('./routes/login');
+app.use('/login', loginRouter);
 
 // Basic route
 app.get('/', (req, res) => {
