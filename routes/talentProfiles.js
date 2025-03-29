@@ -113,7 +113,7 @@ router.get('/:talent_id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+/*router.post('/', async (req, res) => {
   // Extract all parameters from the request body, applying defaults as needed.
   const { 
     min_salary = 0, 
@@ -151,6 +151,60 @@ router.post('/', async (req, res) => {
 
     const { rows } = await pool.query(queryText, queryParams);
     console.log("✅ Query Execution Result:", rows);
+    res.json(rows);
+  } catch (error) {
+    console.error("❌ Error executing query:", error);
+    res.status(500).json({ error: 'An error occurred while fetching talent profiles.' });
+  }
+}*/
+
+router.post('/', async (req, res) => {
+  const {
+    min_salary = 0,
+    max_salary = null,
+    required_skill = null,
+    job_title = null,
+    job_description = null,
+    location = null,
+    availability = null,
+    work_mode = null,
+    match_percentage = 0
+  } = req.body;
+
+  console.log("🔹 Received API Request with Parameters:", req.body);
+
+  try {
+    const queryText = `
+      SELECT * FROM get_filtered_talent_profiles(
+        p_min_salary := $1,
+        p_max_salary := $2,
+        p_required_skill := $3,
+        p_job_title := $4,
+        p_job_description := $5,
+        p_location := $6,
+        p_availability := $7,
+        p_work_mode := $8,
+        p_match_percentage := $9
+      );
+    `;
+
+    const queryParams = [
+      min_salary,
+      max_salary,
+      required_skill,
+      job_title,
+      job_description,
+      location,
+      availability,
+      work_mode,
+      match_percentage
+    ];
+
+    console.log("🔹 Executing Query:", queryText);
+    console.log("🔹 Query Parameters:", queryParams);
+
+    const { rows } = await pool.query(queryText, queryParams);
+    console.log("✅ Query Execution Result:", rows.length, "rows");
     res.json(rows);
   } catch (error) {
     console.error("❌ Error executing query:", error);
