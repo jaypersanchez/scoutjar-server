@@ -63,6 +63,35 @@ app.use('/talent-profiles', talentProfilesMatchRouter);
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
 
+/** Proxy image to resolve Google's ORBS image so image will show on Profile */
+app.get('/api/proxy-image', async (req, res) => {
+  const imageUrl = req.query.url;
+
+  if (!imageUrl || !imageUrl.startsWith('https://')) {
+    return res.status(400).send('Invalid image URL.');
+  }
+
+  // Optional security check – allow only Google-hosted profile pictures
+  if (!imageUrl.startsWith('https://lh3.googleusercontent.com')) {
+    return res.status(403).send('Blocked image host.');
+  }
+
+  try {
+    const response = await fetch(imageUrl);
+
+    if (!response.ok) {
+      return res.status(500).send('Failed to fetch image.');
+    }
+
+    const contentType = response.headers.get('content-type');
+    res.setHeader('Content-Type', contentType);
+    response.body.pipe(res);
+  } catch (err) {
+    console.error('Image proxy failed:', err);
+    res.status(500).send('Proxy error.');
+  }
+});
+
 // Basic route
 app.get('/', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');

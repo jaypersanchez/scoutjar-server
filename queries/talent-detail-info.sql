@@ -19,4 +19,5 @@ FROM
     user_profiles u
 JOIN 
     talent_profiles t ON u.user_id = t.user_id
+-- WHERE u.user_id = 35
 ORDER BY u.user_id;
