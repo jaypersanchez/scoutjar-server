@@ -60,8 +60,13 @@ app.use('/messages', messagesRouter);
 const talentProfilesMatchRouter = require('./routes/talentProfilesMatch');
 app.use('/talent-profiles', talentProfilesMatchRouter);
 
+/** This login route are for recruiters */
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
+
+/**This login route are for talent login */
+const loginTalentRoute = require("./routes/login-talent");
+app.use("/", loginTalentRoute);
 
 /** Proxy image to resolve Google's ORBS image so image will show on Profile */
 app.get('/api/proxy-image', async (req, res) => {
@@ -91,6 +96,9 @@ app.get('/api/proxy-image', async (req, res) => {
     res.status(500).send('Proxy error.');
   }
 });
+
+
+
 
 // Basic route
 app.get('/', (req, res) => {

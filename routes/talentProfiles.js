@@ -212,4 +212,60 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Update talent profile (for talent user only)
+router.post('/update-talent-profile', async (req, res) => {
+  const {
+    talent_id,
+    bio,
+    resume,
+    skills,
+    experience,
+    education,
+    work_preferences,
+    desired_salary,
+    location,
+    availability
+  } = req.body;
+
+  if (!talent_id) {
+    return res.status(400).json({ error: 'Missing talent_id' });
+  }
+
+  try {
+    const updateQuery = `
+      UPDATE talent_profiles
+      SET 
+        bio = $1,
+        resume = $2,
+        skills = $3,
+        experience = $4,
+        education = $5,
+        work_preferences = $6,
+        desired_salary = $7,
+        location = $8,
+        availability = $9
+      WHERE talent_id = $10
+      RETURNING *;
+    `;
+
+    const result = await pool.query(updateQuery, [
+      bio || '',
+      resume || '',
+      skills || [],
+      experience || '',
+      education || '',
+      JSON.stringify(work_preferences || {}),
+      desired_salary || 0,
+      location || '',
+      availability || '',
+      talent_id,
+    ]);
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating talent profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;
