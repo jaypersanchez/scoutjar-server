@@ -11,10 +11,15 @@ router.get('/all', async (req, res) => {
         ORDER BY country ASC, region ASC, city ASC
       `);
   
-      const locations = result.rows.map(row => ({
+      /*const locations = result.rows.map(row => ({
         label: `${row.city}, ${row.region}, ${row.country}`,
         value: `${row.city}, ${row.region}, ${row.country}`,
-      }));
+      }));*/
+      const locations = result.rows.map(row => {
+        const parts = [row.city, row.region, row.country].filter(p => p && p.toLowerCase() !== 'null');
+        const label = parts.join(', ');
+        return { label, value: label };
+      });
   
       res.json(locations);
     } catch (err) {
