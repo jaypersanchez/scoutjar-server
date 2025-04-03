@@ -27,6 +27,36 @@ router.get('/count/:recruiter_id', async (req, res) => {
 router.post('/apply', async (req, res) => {
   const { talent_id, job_id } = req.body;
 
+  if (!talent_id || !job_id) {
+    return res.status(400).json({ error: 'talent_id and job_id are required.' });
+  }
+
+  try {
+    // Check if the talent has already applied to this job
+    const checkQuery = `
+      SELECT 1 FROM job_applications 
+      WHERE talent_id = $1 AND job_id = $2
+      LIMIT 1;
+    `;
+    const checkResult = await pool.query(checkQuery, [talent_id, job_id]);
+
+    if (checkResult.rowCount > 0) {
+      return res.status(409).json({ error: 'Talent has already applied for this job.' });
+    }
+
+    // If not already applied, proceed to apply
+    await pool.query('SELECT apply_for_job($1, $2)', [talent_id, job_id]);
+
+    res.status(200).json({ message: 'Application submitted successfully.' });
+  } catch (error) {
+    console.error('Error applying for job:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/*router.post('/apply', async (req, res) => {
+  const { talent_id, job_id } = req.body;
+
   // Validate required parameters
   if (!talent_id || !job_id) {
     return res.status(400).json({ error: 'talent_id and job_id are required.' });
@@ -42,7 +72,28 @@ router.post('/apply', async (req, res) => {
     console.error('Error applying for job:', error);
     res.status(500).json({ error: error.message });
   }
-}); 
+});*/ 
+
+// GET /job-applicants/talent/:talent_id
+router.get('/talent/:talent_id', async (req, res) => {
+  const { talent_id } = req.params;
+
+  try {
+    const result = await pool.query(`
+      SELECT j.job_id, j.job_title, j.job_description, j.required_skills, j.recruiter_id, ja.application_date, ja.application_status
+      FROM job_applications ja
+      JOIN jobs j ON ja.job_id = j.job_id
+      WHERE ja.talent_id = $1
+      ORDER BY ja.application_date DESC
+    `, [talent_id]);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching applied jobs for talent:", error);
+    res.status(500).json({ error: "Failed to fetch applied jobs" });
+  }
+});
+
 // POST /job-applicants endpoint to get job applicants
 router.post('/', async (req, res) => {
   try {

@@ -67,6 +67,10 @@ app.use('/talent-profiles', talentProfilesMatchRouter);
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
 
+/**This login route are for talent login */
+const loginTalentRoute = require("./routes/login-talent");
+app.use("/", loginTalentRoute);
+
 /** Proxy image to resolve Google's ORBS image so image will show on Profile */
 app.get('/api/proxy-image', async (req, res) => {
   const imageUrl = req.query.url;
