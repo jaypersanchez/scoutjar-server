@@ -114,4 +114,19 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /job-applicants/job-counts
+router.get('/job-counts', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT job_id, COUNT(*) AS applicant_count
+      FROM job_applications
+      GROUP BY job_id
+    `);
+    res.json(result.rows); // [{ job_id: 1, applicant_count: 3 }, ...]
+  } catch (err) {
+    console.error("Error fetching global job applicant counts:", err);
+    res.status(500).json({ error: "Failed to fetch applicant counts" });
+  }
+});
+
 module.exports = router;
