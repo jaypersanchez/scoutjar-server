@@ -3,10 +3,14 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 const pool = require('./db');
+require('dotenv').config();
 
 // Middleware to parse JSON requests
 app.use(cors());
 app.use(express.json());
+const baseUrl = `${process.env.SCOUTJAR_SERVER_BASE_URL}${process.env.SCOUTJAR_SERVER_BASE_PORT}`;
+
+//const AIbaseURL = `${import.meta.env.VITE_SCOUTJAR_AI_BASE_URL}${import.meta.env.VITE_SCOUTJAR_AI_BASE_PORT}`;
 
 // Endpoint to test the database connection
 app.get('/dbtest', async (req, res) => {
@@ -107,5 +111,5 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on ${baseUrl}`);
 });
