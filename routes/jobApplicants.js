@@ -54,7 +54,7 @@ router.post('/apply', async (req, res) => {
   }
 });
 
-/*router.post('/apply', async (req, res) => {
+/**router.post('/apply', async (req, res) => {
   const { talent_id, job_id } = req.body;
 
   // Validate required parameters
@@ -72,7 +72,7 @@ router.post('/apply', async (req, res) => {
     console.error('Error applying for job:', error);
     res.status(500).json({ error: error.message });
   }
-});*/ 
+});**/ 
 
 // GET /job-applicants/talent/:talent_id
 router.get('/talent/:talent_id', async (req, res) => {
