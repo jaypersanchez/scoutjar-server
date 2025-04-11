@@ -106,4 +106,36 @@ router.post('/send-to-talent', async (req, res) => {
   }
 });
 
+// GET endpoint to fetch all chats for a recruiter (list of talents they messaged)
+router.get('/chats', async (req, res) => {
+  const { recruiter_id } = req.query;
+
+  if (!recruiter_id) {
+    return res.status(400).json({ error: "recruiter_id is required." });
+  }
+
+  try {
+    const query = `
+      SELECT 
+        u.user_id AS talent_id,
+        u.full_name AS talent_name,
+        m.content AS last_message,
+        MAX(m.sent_at) AS last_message_time
+      FROM messages m
+      JOIN user_profiles u ON (u.user_id = m.recipient_id OR u.user_id = m.sender_id)
+      WHERE (m.sender_id = $1 OR m.recipient_id = $1)
+        AND u.user_id != $1
+      GROUP BY u.user_id, u.full_name, m.content
+      ORDER BY last_message_time DESC;
+    `;
+    const values = [recruiter_id];
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching chat list:", error);
+    res.status(500).json({ error: "Failed to fetch chat list." });
+  }
+});
+
+
 module.exports = router;
