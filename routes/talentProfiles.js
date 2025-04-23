@@ -168,7 +168,9 @@ router.post('/', async (req, res) => {
     location = null,
     availability = null,
     work_mode = null,
-    match_percentage = 0
+    match_percentage = 0,
+    industry_experience = null,    // NEW
+    years_experience = null        // NEW
   } = req.body;
 
   console.log("🔹 Received API Request with Parameters:", req.body);
@@ -184,7 +186,9 @@ router.post('/', async (req, res) => {
         p_location := $6,
         p_availability := $7,
         p_work_mode := $8,
-        p_match_percentage := $9
+        p_match_percentage := $9,
+        p_industry_experience := $10,
+        p_years_experience := $11
       );
     `;
 
@@ -197,13 +201,23 @@ router.post('/', async (req, res) => {
       location,
       availability,
       work_mode,
-      match_percentage
+      match_percentage,
+      industry_experience,
+      years_experience
     ];
 
-    console.log("🔹 Executing Query:", queryText);
+    /*console.log("🔹 Executing Query:", queryText);
     console.log("🔹 Query Parameters:", queryParams);
+    const { rows } = await pool.query(queryText, queryParams);*/
+
+    console.log("🔹 Executing Query:", queryText);
+    console.log("🧪 Final query parameters:");
+    queryParams.forEach((param, index) => {
+      console.log(`$${index + 1}:`, param);
+    });
 
     const { rows } = await pool.query(queryText, queryParams);
+    
     console.log("✅ Query Execution Result:", rows.length, "rows");
     res.json(rows);
   } catch (error) {
@@ -211,6 +225,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching talent profiles.' });
   }
 });
+
 
 // Update talent profile (for talent user only)
 router.post('/update-talent-profile', async (req, res) => {
