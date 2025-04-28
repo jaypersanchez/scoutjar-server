@@ -14,7 +14,7 @@ npm install
 pm2 delete scoutjar-server || true
 
 # Start new scoutjar-server
-pm2 start npm --name "scoutjar-server" -- run start:dev
+pm2 start npm --name "scoutjar-server-mvp0.1" -- run start:dev
 
 # Save the pm2 process list
 pm2 save
