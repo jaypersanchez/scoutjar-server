@@ -6,7 +6,7 @@ const pool = require('../db'); // Import database connection
 router.get('/all', async (req, res) => {
     try {
       const result = await pool.query(`
-        SELECT DISTINCT country, region, city
+        SELECT DISTINCT country, region, city, country_code
         FROM locations
         ORDER BY country ASC, region ASC, city ASC
       `);
@@ -18,7 +18,10 @@ router.get('/all', async (req, res) => {
       const locations = result.rows.map(row => {
         const parts = [row.city, row.region, row.country].filter(p => p && p.toLowerCase() !== 'null');
         const label = parts.join(', ');
-        return { label, value: label };
+        //const code = row.country_code?.toLowerCase();
+        const code = row.country_code?.toUpperCase().slice(0, 2); // turns "USA" → "US"
+
+        return { label, value: label,code };
       });
   
       res.json(locations);
