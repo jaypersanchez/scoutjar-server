@@ -21,8 +21,8 @@ FROM
     user_profiles u
 JOIN 
     talent_profiles t ON u.user_id = t.user_id
-WHERE 
-  --t.talent_id in (117,118)
-  u.full_name ILIKE '%executiveuser%' OR u.full_name ILIKE '%user%'
+--WHERE 
+  --t.talent_id in (117,118,101,129,140)
+  -- u.email = 'jaytalent@talent.com' -- OR u.full_name ILIKE '%user%'
 ORDER BY 
     u.user_id;
