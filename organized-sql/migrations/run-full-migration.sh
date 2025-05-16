@@ -30,4 +30,7 @@ psql -h $HOST -U $USER -d $DB -f ../performance/2025-05-16-add-performance-index
 echo "📦 Exporting schema snapshot..."
 bash ../export/2025-05-16-export-full-schema.sh
 
+echo "📦 Cleanup and Validate User Relationship..."
+psql -h $HOST -U $USER -d $DB -f ../cleanup/validate-user-relationships.sql
+
 echo "✅ Migration complete!"

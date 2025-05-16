@@ -25,22 +25,31 @@ router.post('/', async (req, res) => {
       ) AS job_id;
     `;
     const values = [
-      recruiter_id,
+      recruiter_id || null,
       job_title,
       job_description,
-      required_skills,
-      experience_level,
-      employment_type,
-      salary_range,
-      work_mode,
-      location
+      Array.isArray(required_skills) ? required_skills : [], // safe fallback
+      experience_level || null,
+      employment_type || null,
+      Array.isArray(salary_range) ? salary_range : [null, null], // safe fallback
+      work_mode || null,
+      location || null
     ];
+
 
     // Execute the query
     const result = await pool.query(query, values);
 
     // Return the new job's ID in the response
-    res.status(201).json({ job_id: result.rows[0].job_id });
+    //res.status(201).json({ job_id: result.rows[0].job_id });
+    const jobId = result.rows[0].job_id;
+    if (!jobId) {
+      console.error('[ERROR] insert_job returned NULL. Insert likely failed silently.');
+      return res.status(500).json({ error: 'Insert failed silently. Check server logs or DB.' });
+    }
+    console.log('[SUCCESS] Job inserted with ID:', jobId);
+    res.status(201).json({ job_id: jobId });
+
   } catch (error) {
     console.error('Error inserting job:', error);
     res.status(500).json({ error: 'Failed to insert job' });
