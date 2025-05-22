@@ -43,7 +43,7 @@ router.post('/grouped', async (req, res) => {
 // POST endpoint to add a shortlisted candidate
 router.post('/add', async (req, res) => {
   const { recruiter_id, talent_id, job_id } = req.body;
-
+  console.log(recruiter_id, talent_id, job_id)
   // Validate required parameters
   if (!recruiter_id || !talent_id || !job_id) {
     return res.status(400).json({ error: 'recruiter_id, talent_id, and job_id are required.' });

@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
         user: newUser,
         recruiter: recruiterInsert.rows[0],
       });
-      await pool.query("ROLLBACK");
+      //await pool.query("ROLLBACK");
 +     res.status(401).json({ error: "Invalid email or password" });
     }
   } catch (error) {
