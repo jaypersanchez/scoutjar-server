@@ -1,12 +1,19 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 5000;
 const pool = require('./db');
+
 require('dotenv').config();
 
 // Middleware to parse JSON requests
 app.use(cors());
+
+// In your main server file (e.g., index.js or app.js)
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+
 app.use(express.json());
 const baseUrl = `${process.env.SCOUTJAR_SERVER_BASE_URL}:${process.env.SCOUTJAR_SERVER_BASE_PORT}`;
 
@@ -101,7 +108,6 @@ app.get('/api/proxy-image', async (req, res) => {
     res.status(500).send('Proxy error.');
   }
 });
-
 
 
 

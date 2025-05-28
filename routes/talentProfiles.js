@@ -1,6 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+
+// Store uploads in public/uploads with original name
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
 
 // Fetch company info by recruiter ID
 // Get recruiter profile including full_name and email
@@ -61,15 +80,15 @@ router.get('/by-recruiter/:recruiter_id', async (req, res) => {
 });*/
 
 // Update recruiter info: name, company and website url and eventually image
-router.post("/update-recruiter-profile", async (req, res) => {
+router.post("/update-recruiter-profile", upload.single('company_logo'), async (req, res) => {
   const { recruiter_id, full_name, company_name, company_website } = req.body;
+  const logoFile = req.file;
 
   if (!recruiter_id) {
     return res.status(400).json({ error: "Missing recruiter_id" });
   }
 
   try {
-    // Get user_id associated with the recruiter
     const result = await pool.query(
       "SELECT user_id FROM talent_recruiters WHERE recruiter_id = $1",
       [recruiter_id]
@@ -81,22 +100,22 @@ router.post("/update-recruiter-profile", async (req, res) => {
 
     const user_id = result.rows[0].user_id;
 
-    // Update full_name if provided
     if (full_name && full_name.trim()) {
-      const fullNameUpdate = await pool.query(
-        "UPDATE user_profiles SET full_name = $1 WHERE user_id = $2 RETURNING full_name",
+      await pool.query(
+        "UPDATE user_profiles SET full_name = $1 WHERE user_id = $2",
         [full_name, user_id]
       );
-      console.log("Updated full_name:", fullNameUpdate.rows[0]);
     }
 
-    // Update company_name and company_website
+    const logoPath = logoFile ? `/uploads/${logoFile.filename}` : null;
+
     await pool.query(
       `UPDATE talent_recruiters
        SET company_name = $1,
-           company_website = $2
-       WHERE recruiter_id = $3`,
-      [company_name, company_website, recruiter_id]
+           company_website = $2,
+           company_logo = COALESCE($3, company_logo)
+       WHERE recruiter_id = $4`,
+      [company_name, company_website, logoPath, recruiter_id]
     );
 
     res.json({ message: "Recruiter profile updated successfully." });
@@ -105,6 +124,7 @@ router.post("/update-recruiter-profile", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 
