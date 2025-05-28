@@ -3,7 +3,40 @@ const router = express.Router();
 const pool = require('../db'); 
 
 // Fetch company info by recruiter ID
+// Get recruiter profile including full_name and email
 router.get('/by-recruiter/:recruiter_id', async (req, res) => {
+  const { recruiter_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        tr.recruiter_id,
+        tr.company_name, 
+        tr.company_website, 
+        tr.company_logo,
+        up.full_name, 
+        up.email, 
+        up.profile_picture
+      FROM talent_recruiters tr
+      JOIN user_profiles up ON tr.user_id = up.user_id
+      WHERE tr.recruiter_id = $1
+      `,
+      [recruiter_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Recruiter profile not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching recruiter profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/*router.get('/by-recruiter/:recruiter_id', async (req, res) => {
   const { recruiter_id } = req.params;
 
   try {
@@ -25,7 +58,55 @@ router.get('/by-recruiter/:recruiter_id', async (req, res) => {
     console.error("Error fetching recruiter profile:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+});*/
+
+// Update recruiter info: name, company and website url and eventually image
+router.post("/update-recruiter-profile", async (req, res) => {
+  const { recruiter_id, full_name, company_name, company_website } = req.body;
+
+  if (!recruiter_id) {
+    return res.status(400).json({ error: "Missing recruiter_id" });
+  }
+
+  try {
+    // Get user_id associated with the recruiter
+    const result = await pool.query(
+      "SELECT user_id FROM talent_recruiters WHERE recruiter_id = $1",
+      [recruiter_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Recruiter not found" });
+    }
+
+    const user_id = result.rows[0].user_id;
+
+    // Update full_name if provided
+    if (full_name && full_name.trim()) {
+      const fullNameUpdate = await pool.query(
+        "UPDATE user_profiles SET full_name = $1 WHERE user_id = $2 RETURNING full_name",
+        [full_name, user_id]
+      );
+      console.log("Updated full_name:", fullNameUpdate.rows[0]);
+    }
+
+    // Update company_name and company_website
+    await pool.query(
+      `UPDATE talent_recruiters
+       SET company_name = $1,
+           company_website = $2
+       WHERE recruiter_id = $3`,
+      [company_name, company_website, recruiter_id]
+    );
+
+    res.json({ message: "Recruiter profile updated successfully." });
+  } catch (error) {
+    console.error("Error updating recruiter profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
+
 
 // Update company name and website using recruiter ID
 router.post('/update', async (req, res) => {
