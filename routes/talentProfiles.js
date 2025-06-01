@@ -386,7 +386,7 @@ router.post('/update-talent-profile', async (req, res) => {
 });
 
   // Update profile_mode for a given talent
-  router.post('/update-profile-mode', async (req, res) => {
+  /*router.post('/update-profile-mode', async (req, res) => {
     const { talent_id, profile_mode } = req.body;
 
     if (!talent_id || !['active', 'passive'].includes(profile_mode)) {
@@ -408,6 +408,35 @@ router.post('/update-talent-profile', async (req, res) => {
       console.error("Error updating profile mode:", err);
       res.status(500).json({ error: "Internal server error" });
     }
-  });
+  });*/
+
+  router.post('/update-profile-mode', async (req, res) => {
+  const { talent_id, profile_mode } = req.body;
+  console.log('🔄 Incoming request to update profile_mode:', req.body);
+
+  if (!talent_id || !['active', 'passive'].includes(profile_mode)) {
+    console.warn('⚠️ Invalid request payload');
+    return res.status(400).json({ error: 'Invalid talent_id or profile_mode' });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE talent_profiles SET profile_mode = $1 WHERE talent_id = $2 RETURNING profile_mode`,
+      [profile_mode, talent_id]
+    );
+
+    if (result.rowCount === 0) {
+      console.warn('⚠️ No talent found for ID:', talent_id);
+      return res.status(404).json({ error: 'Talent not found' });
+    }
+
+    console.log(`✅ profile_mode updated to "${profile_mode}" for talent_id: ${talent_id}`);
+    res.json({ message: 'Profile mode updated', profile_mode: result.rows[0].profile_mode });
+  } catch (err) {
+    console.error("❌ DB error updating profile mode:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 module.exports = router;
