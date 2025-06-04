@@ -9,6 +9,11 @@ const pool = require('./db');
 
 require('dotenv').config();
 
+const sslOptions = {
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.cert'),
+};
+
 // Middleware to parse JSON requests
 app.use(cors());
 
