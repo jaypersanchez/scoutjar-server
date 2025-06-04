@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs'); 
+const https = require('https');  
 const app = express();
 const port = process.env.PORT || 5000;
 const pool = require('./db');
@@ -120,7 +122,11 @@ app.get('/', (req, res) => {
 /*app.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on ${baseUrl}`);
 });*/
-app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
+/*app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
   console.log(`Server running on ${process.env.HOST}:${process.env.PORT}`);
+});*/
+
+https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
+  console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
 });
 
