@@ -20,7 +20,7 @@ app.use(cors());
 app.use('/api',api)
 
 // In your main server file (e.g., index.js or app.js)
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/api//uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 
 app.use(express.json());
