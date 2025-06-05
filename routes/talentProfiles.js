@@ -1,9 +1,61 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+
+// Store uploads in public/uploads with original name
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage });
 
 // Fetch company info by recruiter ID
+// Get recruiter profile including full_name and email
 router.get('/by-recruiter/:recruiter_id', async (req, res) => {
+  const { recruiter_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        tr.recruiter_id,
+        tr.company_name, 
+        tr.company_website, 
+        tr.company_logo,
+        up.full_name, 
+        up.email, 
+        up.profile_picture
+      FROM talent_recruiters tr
+      JOIN user_profiles up ON tr.user_id = up.user_id
+      WHERE tr.recruiter_id = $1
+      `,
+      [recruiter_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Recruiter profile not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching recruiter profile:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/*router.get('/by-recruiter/:recruiter_id', async (req, res) => {
   const { recruiter_id } = req.params;
 
   try {
@@ -25,7 +77,56 @@ router.get('/by-recruiter/:recruiter_id', async (req, res) => {
     console.error("Error fetching recruiter profile:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+});*/
+
+// Update recruiter info: name, company and website url and eventually image
+router.post("/update-recruiter-profile", upload.single('company_logo'), async (req, res) => {
+  const { recruiter_id, full_name, company_name, company_website } = req.body;
+  const logoFile = req.file;
+
+  if (!recruiter_id) {
+    return res.status(400).json({ error: "Missing recruiter_id" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT user_id FROM talent_recruiters WHERE recruiter_id = $1",
+      [recruiter_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Recruiter not found" });
+    }
+
+    const user_id = result.rows[0].user_id;
+
+    if (full_name && full_name.trim()) {
+      await pool.query(
+        "UPDATE user_profiles SET full_name = $1 WHERE user_id = $2",
+        [full_name, user_id]
+      );
+    }
+
+    const logoPath = logoFile ? `/uploads/${logoFile.filename}` : null;
+
+    await pool.query(
+      `UPDATE talent_recruiters
+       SET company_name = $1,
+           company_website = $2,
+           company_logo = COALESCE($3, company_logo)
+       WHERE recruiter_id = $4`,
+      [company_name, company_website, logoPath, recruiter_id]
+    );
+
+    res.json({ message: "Recruiter profile updated successfully." });
+  } catch (error) {
+    console.error("Error updating recruiter profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
+
+
 
 // Update company name and website using recruiter ID
 router.post('/update', async (req, res) => {
@@ -281,6 +382,80 @@ router.post('/update-talent-profile', async (req, res) => {
     console.error('Error updating talent profile:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+
 });
+
+  // Update profile_mode for a given talent
+  /*router.post('/update-profile-mode', async (req, res) => {
+    const { talent_id, profile_mode } = req.body;
+
+    if (!talent_id || !['active', 'passive'].includes(profile_mode)) {
+      return res.status(400).json({ error: 'Invalid talent_id or profile_mode' });
+    }
+
+    try {
+      const result = await pool.query(
+        `UPDATE talent_profiles SET profile_mode = $1 WHERE talent_id = $2 RETURNING profile_mode`,
+        [profile_mode, talent_id]
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: 'Talent not found' });
+      }
+
+      res.json({ message: 'Profile mode updated', profile_mode: result.rows[0].profile_mode });
+    } catch (err) {
+      console.error("Error updating profile mode:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });*/
+
+  router.post('/update-profile-mode', async (req, res) => {
+  const { talent_id, profile_mode } = req.body;
+  console.log('🔄 Incoming request to update profile_mode:', req.body);
+
+  if (!talent_id || !['active', 'passive'].includes(profile_mode)) {
+    console.warn('⚠️ Invalid request payload');
+    return res.status(400).json({ error: 'Invalid talent_id or profile_mode' });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE talent_profiles SET profile_mode = $1 WHERE talent_id = $2 RETURNING profile_mode`,
+      [profile_mode, talent_id]
+    );
+
+    if (result.rowCount === 0) {
+      console.warn('⚠️ No talent found for ID:', talent_id);
+      return res.status(404).json({ error: 'Talent not found' });
+    }
+
+    console.log(`✅ profile_mode updated to "${profile_mode}" for talent_id: ${talent_id}`);
+    res.json({ message: 'Profile mode updated', profile_mode: result.rows[0].profile_mode });
+  } catch (err) {
+    console.error("❌ DB error updating profile mode:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get('/get-talent-profile/:user_id', async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const result = await db.query(
+      'SELECT * FROM talent_profiles WHERE user_id = $1 LIMIT 1',
+      [user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Talent not found' });
+    }
+
+    return res.json(result.rows[0]);
+  } catch (err) {
+    console.error('❌ Error fetching talent profile:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 module.exports = router;

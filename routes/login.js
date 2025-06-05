@@ -53,22 +53,22 @@ router.post("/", async (req, res) => {
       });
     } else {
       // New user: create profile and recruiter
-      /*const userInsert = await pool.query(
+      const userInsert = await pool.query(
         `INSERT INTO user_profiles (email, full_name, user_type, oauth_provider)
          VALUES ($1, $2, $3, $4) RETURNING *`,
         [email, email.split("@")[0], "Scout", "Password"]
       );
-      const newUser = userInsert.rows[0];*/
+      const newUser = userInsert.rows[0];
 
       // Hash and store password
-      /*const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+      const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
       await pool.query(
         `INSERT INTO user_credentials (user_id, password_hash) VALUES ($1, $2)`,
         [newUser.user_id, passwordHash]
-      );*/
+      );
 
       // Create recruiter
-      /*const recruiterInsert = await pool.query(
+      const recruiterInsert = await pool.query(
         `INSERT INTO talent_recruiters (user_id, company_name)
          VALUES ($1, $2) RETURNING *`,
         [newUser.user_id, newUser.full_name]
@@ -78,8 +78,8 @@ router.post("/", async (req, res) => {
       return res.status(201).json({
         user: newUser,
         recruiter: recruiterInsert.rows[0],
-      });*/
-      await pool.query("ROLLBACK");
+      });
+      //await pool.query("ROLLBACK");
 +     res.status(401).json({ error: "Invalid email or password" });
     }
   } catch (error) {

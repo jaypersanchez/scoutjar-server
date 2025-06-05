@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS support_notes (
+    user_id INTEGER PRIMARY KEY,
+    notes TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
