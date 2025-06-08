@@ -20,7 +20,7 @@ app.use(cors());
 app.use('/api',api)
 
 // In your main server file (e.g., index.js or app.js)
-app.use('/api//uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 
 app.use(express.json());
@@ -126,9 +126,7 @@ app.get('/api', (req, res) => {
 });
 
 // Start server
-/*app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is running on ${baseUrl}`);
-});*/
+
 /*app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
   console.log(`Server running on ${process.env.HOST}:${process.env.PORT}`);
 });*/
