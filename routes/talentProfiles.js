@@ -259,6 +259,7 @@ router.get('/:talent_id', async (req, res) => {
   }
 }*/
 
+
 router.post('/', async (req, res) => {
   const {
     min_salary = 0,
