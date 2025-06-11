@@ -47,6 +47,12 @@ router.post('/', async (req, res) => {
       console.error('[ERROR] insert_job returned NULL. Insert likely failed silently.');
       return res.status(500).json({ error: 'Insert failed silently. Check server logs or DB.' });
     }
+    // ✅ Insert currency only after jobId is confirmed
+    await pool.query(
+      `INSERT INTO job_currency (job_id, currency) VALUES ($1, $2)`,
+      [jobId, req.body.salary_currency || 'USD']
+    );
+
     console.log('[SUCCESS] Job inserted with ID:', jobId);
     res.status(201).json({ job_id: jobId });
 
@@ -55,6 +61,36 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to insert job' });
   }
 });
+
+// Gets the currency that is set for the related job id
+router.get('/currency/:job_id', async (req, res) => {
+  const jobId = req.params.job_id;
+
+  try {
+    const result = await pool.query(
+      'SELECT currency FROM job_currency WHERE job_id = $1',
+      [jobId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Currency not found' });
+    }
+
+    res.json({ currency: result.rows[0].currency });
+  } catch (error) {
+    console.error('Error fetching currency:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// This is a secondary query called from the Job Post list to get the associated currency. 
+// Avoiding having to change code on Postgres function
+router.get('/jobs/currency/:job_id', async (req, res) => {
+  const { job_id } = req.params;
+  const result = await pool.query('SELECT currency FROM job_currency WHERE job_id = $1', [job_id]);
+  res.json({ currency: result.rows[0]?.currency || 'USD' });
+});
+
 
 // Simple GET route for dropdowns like job matching UI
 router.get('/', async (req, res) => {
