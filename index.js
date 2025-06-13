@@ -135,11 +135,11 @@ app.get('/api', (req, res) => {
 
 // Start server
 
-app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
+/*app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
   console.log(`Server running on ${process.env.HOST}:${process.env.PORT}`);
-});
-
-/*https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
-  console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
 });*/
+
+https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
+  console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
+});
 
