@@ -89,6 +89,14 @@ app.use('/api/login', loginRouter);
 const loginTalentRoute = require("./routes/login-talent");
 app.use("/api", loginTalentRoute);
 
+/** Forget password */
+const resetPasswordRequest = require('./routes/resetPasswordRequest');
+const resetPasswordVerify = require('./routes/resetPasswordVerify');
+
+app.use('/api/reset-password', resetPasswordRequest);
+app.use('/api/reset-password', resetPasswordVerify);
+
+
 /** Proxy image to resolve Google's ORBS image so image will show on Profile */
 app.get('/api/proxy-image', async (req, res) => {
   const imageUrl = req.query.url;
