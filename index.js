@@ -133,13 +133,13 @@ app.get('/api', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');
 });
 
-// Start server
-
-app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
+// Start server for local development
+/*app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
   console.log(`Server running on ${process.env.HOST}:${process.env.PORT}`);
-});
-
-/*https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
-  console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
 });*/
+
+// Change to this before deployment to cloud server.
+https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
+  console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
+});
 

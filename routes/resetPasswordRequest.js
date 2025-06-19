@@ -3,12 +3,26 @@ const express = require("express");
 const crypto = require("crypto");
 const pool = require("../db");
 const router = express.Router();
+const nodemailer = require("nodemailer");
+
+const baseUrl = `${process.env.SCOUTJAR_SERVER_BASE_URL || 'http://localhost'}:${process.env.SCOUTJAR_SERVER_BASE_PORT || 5000}`;
+
+
+const transporter = nodemailer.createTransport({
+  host: "smtpout.secureserver.net",
+  port: 587,
+  secure: false, // true for 465, false for 587
+  auth: {
+    user: process.env.SMTP_USER_NAME,     // e.g. 'noreply@lookk.ai'
+    pass: process.env.SMTP_PASSWORD, // your email password
+  },
+});
 
 router.post("/request-reset", async (req, res) => {
   const { email } = req.body;
   const token = crypto.randomBytes(32).toString("hex");
   const tokenExpiry = Date.now() + 1000 * 60 * 60; // 1 hour
-
+  console.log(`Password Reset Request ${email}::${token}::${tokenExpiry}`)
   try {
     const userRes = await pool.query(
       "SELECT user_id FROM user_profiles WHERE email = $1",
@@ -29,7 +43,14 @@ router.post("/request-reset", async (req, res) => {
     `, [userId, token, tokenExpiry]);
 
     // Replace with real email send once SMTP is working
-    console.log(`Reset link: https://lookk.ai/auth/reset-password/${token}`);
+    console.log(`Reset link: ${baseUrl}/reset-password/${token}`);
+    const resetLink = `${baseUrl}/reset-password/${token}`
+    await transporter.sendMail({
+      from: '"LooKK Support" <noreply@lookk.ai>',
+      to: email,
+      subject: "Password Reset Request",
+      html: `<p>You requested a password reset. Click <a href="${resetLink}">here</a> to reset your password.</p>`
+    });
 
     res.status(200).json({ message: "Reset link sent if email exists." });
   } catch (err) {
