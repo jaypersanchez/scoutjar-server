@@ -134,11 +134,14 @@ app.get('/api', (req, res) => {
 });
 
 // Start server for local development
-/*app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
+/*console.log(`You are in localhost DEVELOPMENT MODE`)
+app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
   console.log(`Server running on ${process.env.HOST}:${process.env.PORT}`);
 });*/
 
 // Change to this before deployment to cloud server.
+
+console.log(`You are in PRODUCTION MODE`)
 https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
   console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
 });
