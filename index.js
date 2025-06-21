@@ -9,6 +9,7 @@ const port = process.env.PORT || 5000;
 const pool = require('./db');
 
 require('dotenv').config();
+const appEnv = process.env.APP_ENV || 'development';
 
 const sslOptions = {
   key: fs.readFileSync('./server.key'),
@@ -133,6 +134,19 @@ app.get('/api', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');
 });
 
+// Start Server based on ENV
+if (appEnv === 'production') {
+  console.log(`🔒 You are in PRODUCTION MODE`);
+  https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
+    console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
+  });
+} else {
+  console.log(`🚧 You are in DEVELOPMENT MODE`);
+  app.listen(port, process.env.HOST || '0.0.0.0', () => {
+    console.log(`Server running on http://${process.env.HOST || '0.0.0.0'}:${port}`);
+  });
+}
+
 // Start server for local development
 /*console.log(`You are in localhost DEVELOPMENT MODE`)
 app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
@@ -140,9 +154,8 @@ app.listen(process.env.PORT || 5000, process.env.HOST || '0.0.0.0', () => {
 });*/
 
 // Change to this before deployment to cloud server.
-
-console.log(`You are in PRODUCTION MODE`)
+/*console.log(`You are in PRODUCTION MODE`)
 https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
   console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
-});
+});*/
 
