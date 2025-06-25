@@ -90,6 +90,10 @@ app.use('/api/login', loginRouter);
 const loginTalentRoute = require("./routes/login-talent");
 app.use("/api", loginTalentRoute);
 
+/**This login route are for talent login via social media */
+const socialLoginTalentRoute = require("./routes/social-login-talent");
+app.use("/api/social-login-talent", socialLoginTalentRoute);
+
 /** Forget password */
 const resetPasswordRequest = require('./routes/resetPasswordRequest');
 const resetPasswordVerify = require('./routes/resetPasswordVerify');

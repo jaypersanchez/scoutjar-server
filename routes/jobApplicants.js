@@ -129,4 +129,43 @@ router.get('/job-counts', async (req, res) => {
   }
 });
 
+/**
+ * GET /job-applicants/job/:job_id/recruiter/:recruiter_id
+ * ------------------------------------------------------
+ * Returns every applicant who applied to <job_id> that belongs to <recruiter_id>.
+ * The result includes:
+ *   • ALL columns from talent_profiles  (tp.*)
+ *   • full_name from user_profiles      (up.full_name)
+ *
+ * Example:  /api/job-applicants/job/42/recruiter/7
+ */
+router.get("/job/:job_id/recruiter/:recruiter_id",
+  async (req, res) => {
+    const { job_id, recruiter_id } = req.params;
+
+    try {
+      const { rows } = await pool.query(
+        `
+        SELECT
+          tp.*,
+          up.full_name
+        FROM job_applications   AS ja
+        JOIN talent_profiles    AS tp ON tp.talent_id = ja.talent_id
+        JOIN user_profiles      AS up ON up.user_id   = tp.user_id
+        WHERE ja.job_id       = $1
+          AND ja.recruiter_id = $2
+        ORDER BY ja.application_date DESC
+        `,
+        [job_id, recruiter_id]
+      );
+
+      res.json(rows);             // array of applicants (possibly empty)
+    } catch (err) {
+      console.error("Error fetching job-applicants list:", err);
+      res.status(500).json({ error: "Failed to fetch job applicants" });
+    }
+  }
+);
+
+
 module.exports = router;
