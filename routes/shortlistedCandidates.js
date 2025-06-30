@@ -11,7 +11,7 @@ router.post('/grouped', async (req, res) => {
   }
 
   try {
-    const query = `
+    /*const query = `
       SELECT sc.job_id,
              json_agg(
                json_build_object(
@@ -29,7 +29,34 @@ router.post('/grouped', async (req, res) => {
       WHERE sc.recruiter_id = $1
       GROUP BY sc.job_id
       ORDER BY sc.job_id;
-    `;
+    `;*/
+    const query = `
+  SELECT sc.job_id,
+         j.job_description AS job_description,
+         json_agg(
+           json_build_object(
+             'shortlist_id', sc.shortlist_id,
+             'recruiter_id', sc.recruiter_id,
+             'talent_id', sc.talent_id,
+             'added_at', sc.added_at,
+             'full_name', up.full_name,
+             'location', tp.location,
+             'skills', tp.skills,
+             'desired_salary', tp.desired_salary,
+             'work_preferences', tp.work_preferences,
+             'availability', tp.availability
+             
+           )
+         ) AS candidates
+  FROM shortlisted_candidates sc
+  JOIN talent_profiles tp ON sc.talent_id = tp.talent_id
+  JOIN user_profiles up ON tp.user_id = up.user_id
+  JOIN jobs j ON sc.job_id = j.job_id
+  WHERE sc.recruiter_id = $1
+  GROUP BY sc.job_id, j.job_description
+  ORDER BY sc.job_id;
+`;
+
     const values = [recruiter_id];
     const result = await pool.query(query, values);
     res.json(result.rows);
