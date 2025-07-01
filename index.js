@@ -138,6 +138,12 @@ app.get('/api', (req, res) => {
     res.send('Welcome to ScoutJar Server Side Express!');
 });
 
+// global error handler (place this right before server start!)
+app.use((err, req, res, next) => {
+  console.error("💥 Global uncaught error:", err);
+  res.status(500).json({ error: "Something went wrong" });
+}); 
+
 // Start Server based on ENV
 if (appEnv === 'production') {
   console.log(`🔒 You are in PRODUCTION MODE`);
