@@ -3,6 +3,8 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const pool = require("../db");
 const router = express.Router();
+console.log("🚀 pool check:", pool ? "OK" : "NOT INITIALIZED");
+
 
 const SALT_ROUNDS = 10;
 
@@ -88,10 +90,14 @@ router.post("/login-talent", async (req, res) => {
       });
     }
   } catch (error) {
-    await pool.query("ROLLBACK");
-    console.error("Login Talent route error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+        try {
+          await pool.query("ROLLBACK");
+        } catch (rollbackError) {
+          console.error("🔥 Rollback also failed:", rollbackError);
+        }
+        console.error("Login Talent route error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 module.exports = router;
