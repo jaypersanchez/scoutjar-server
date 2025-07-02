@@ -147,9 +147,12 @@ app.use((err, req, res, next) => {
 // Start Server based on ENV
 if (appEnv === 'production') {
   console.log(`🔒 You are in PRODUCTION MODE`);
-  https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
-    console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
-  });
+  /*https.createServer(sslOptions, app).listen(port, '0.0.0.0', () => {
+   console.log(`🔐 HTTPS server running at https://0.0.0.0:${port}`);
+  });*/
+  app.listen(port, '0.0.0.0',() => {
+    console.log(`🚀 HTTP server running on port ${port} (nginx handles TLS)`);
+  })
 } else {
   console.log(`🚧 You are in DEVELOPMENT MODE`);
   app.listen(port, process.env.HOST || '0.0.0.0', () => {

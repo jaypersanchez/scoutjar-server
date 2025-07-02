@@ -24,6 +24,7 @@ router.post("/login-talent", async (req, res) => {
 
     if (existing.rows.length > 0) {
       const user = existing.rows[0];
+      console.log("existing user user_id:",user.user_id)
       if (!user.user_id || isNaN(user.user_id)) {
         console.error("🚨 Invalid user_id:", user.user_id);
         await pool.query("ROLLBACK");
@@ -65,6 +66,7 @@ router.post("/login-talent", async (req, res) => {
         [email, email.split("@")[0], "Talent", "Password"]
       );
       const newUser = userInsert.rows[0];
+      console.log("new user user_id after insert:",newUser.user_id) 
       if (!newUser.user_id || isNaN(newUser.user_id)) {
         console.error("🚨 Invalid new user_id after insert:", newUser.user_id);
         await pool.query("ROLLBACK");
