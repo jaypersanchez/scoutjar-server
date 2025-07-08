@@ -364,7 +364,7 @@ router.post('/update-talent-profile', async (req, res) => {
         desired_salary = $7,
         location = $8,
         availability = $9,
-        employment_type = $10,
+        employment_type = $10
       WHERE talent_id = $11
       RETURNING *;
     `;
