@@ -344,7 +344,8 @@ router.post('/update-talent-profile', async (req, res) => {
     desired_salary,
     location,
     availability,
-    employment_type
+    employment_type,
+    desired_currency
   } = req.body;
   
   if (!talent_id) {
@@ -364,8 +365,9 @@ router.post('/update-talent-profile', async (req, res) => {
         desired_salary = $7,
         location = $8,
         availability = $9,
-        employment_type = $10
-      WHERE talent_id = $11
+        employment_type = $10,
+        desired_currency = $11
+      WHERE talent_id = $12
       RETURNING *;
     `;
 
@@ -380,6 +382,7 @@ router.post('/update-talent-profile', async (req, res) => {
       location || '',
       availability || '',
       employment_type || '',
+      desired_currency || '',
       talent_id
     ]);
 
