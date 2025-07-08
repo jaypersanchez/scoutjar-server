@@ -331,19 +331,22 @@ router.post('/', async (req, res) => {
 
 // Update talent profile (for talent user only)
 router.post('/update-talent-profile', async (req, res) => {
+  console.log('📥 Incoming /update-talent-profile body:', req.body);
+
   const {
     talent_id,
     bio,
     resume,
     skills,
-    experience,
+    experience_level,
     education,
     work_preferences,
     desired_salary,
     location,
-    availability
+    availability,
+    employment_type
   } = req.body;
-
+  
   if (!talent_id) {
     return res.status(400).json({ error: 'Missing talent_id' });
   }
@@ -355,13 +358,14 @@ router.post('/update-talent-profile', async (req, res) => {
         bio = $1,
         resume = $2,
         skills = $3,
-        experience = $4,
+        experience_level = $4,
         education = $5,
         work_preferences = $6,
         desired_salary = $7,
         location = $8,
-        availability = $9
-      WHERE talent_id = $10
+        availability = $9,
+        employment_type = $10,
+      WHERE talent_id = $11
       RETURNING *;
     `;
 
@@ -369,13 +373,14 @@ router.post('/update-talent-profile', async (req, res) => {
       bio || '',
       resume || '',
       skills || [],
-      experience || '',
+      experience_level || '',
       education || '',
       JSON.stringify(work_preferences || {}),
       desired_salary || 0,
       location || '',
       availability || '',
-      talent_id,
+      employment_type || '',
+      talent_id
     ]);
 
     res.json(result.rows[0]);
