@@ -377,7 +377,7 @@ router.post('/update-talent-profile', async (req, res) => {
       skills || [],
       experience_level || '',
       education || '',
-      JSON.stringify(work_preferences || {}),
+      work_preferences || '',
       desired_salary || 0,
       location || '',
       availability || '',
