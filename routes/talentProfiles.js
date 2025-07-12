@@ -400,6 +400,12 @@ router.post('/update-talent-profile', async (req, res) => {
       );
     }
 
+    // Fetch the fully updated talent_profile row to return
+    const updated = await pool.query(
+      `SELECT * FROM talent_profiles WHERE talent_id = $1`,
+      [talent_id]
+    );
+
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error updating talent profile:', error);
