@@ -406,7 +406,7 @@ router.post('/update-talent-profile', async (req, res) => {
       [talent_id]
     );
 
-    res.json(result.rows[0]);
+    res.json(updated.rows[0]);
   } catch (error) {
     console.error('Error updating talent profile:', error);
     res.status(500).json({ error: 'Internal server error' });
