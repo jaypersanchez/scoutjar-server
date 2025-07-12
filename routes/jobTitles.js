@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 
 // Get all job titles (or with optional query param for filtering)
-app.get('/job-titles', async (req, res) => {
+router.get('/job-titles', async (req, res) => {
   const { q } = req.query;
   const titles = await db.query(`
     SELECT DISTINCT job_title 
@@ -15,7 +15,7 @@ app.get('/job-titles', async (req, res) => {
 });
 
 // Get unique job categories
-app.get('/job-categories', async (req, res) => {
+router.get('/job-categories', async (req, res) => {
   const { q } = req.query;
   const categories = await db.query(`
     SELECT DISTINCT job_category 
