@@ -335,6 +335,8 @@ router.post('/update-talent-profile', async (req, res) => {
 
   const {
     talent_id,
+    full_name,
+    user_id,
     bio,
     resume,
     skills,
@@ -385,6 +387,14 @@ router.post('/update-talent-profile', async (req, res) => {
       desired_currency || '',
       talent_id
     ]);
+
+    // ✅ Also update user_profiles.full_name if needed
+    if (full_name && full_name.trim() && user_id) {
+      await pool.query(
+        `UPDATE user_profiles SET full_name = $1 WHERE user_id = $2`,
+        [full_name.trim(), user_id]
+      );
+    }
 
     res.json(result.rows[0]);
   } catch (error) {
