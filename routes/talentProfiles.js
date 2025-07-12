@@ -469,6 +469,7 @@ router.post('/update-talent-profile', async (req, res) => {
   }
 });
 
+//this is for semantic search
 router.get('/get-talent-profile/:user_id', async (req, res) => {
   try {
     const { user_id } = req.params;
