@@ -406,6 +406,8 @@ router.post('/update-talent-profile', async (req, res) => {
       [talent_id]
     );
 
+    console.log("📤 Updated profile being returned:", updated.rows[0]);
+
     res.json(updated.rows[0]);
   } catch (error) {
     console.error('Error updating talent profile:', error);
