@@ -350,6 +350,10 @@ router.post('/update-talent-profile', async (req, res) => {
     desired_currency
   } = req.body;
   
+  console.log('📥 Full payload:', JSON.stringify(req.body, null, 2));
+  console.log('✅ user_id:', user_id);
+  console.log('✅ full_name:', full_name);
+
   if (!talent_id) {
     return res.status(400).json({ error: 'Missing talent_id' });
   }
